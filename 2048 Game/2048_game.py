@@ -26,10 +26,12 @@ COLORS = {
 
 # Initialize the board
 def initialize_board():
+    """Initialize a 4x4 game board with all zeros."""
     return [[0] * 4 for _ in range(4)]
 
 # Adding new tile after every turn
 def add_new_tile(board):
+    """Add a new tile to the board with a value of 2 or 4."""
     empty_cells = [(i, j) for i in range(4) for j in range(4) if board[i][j] == 0]
     if empty_cells:
         i, j = random.choice(empty_cells)
@@ -37,6 +39,7 @@ def add_new_tile(board):
 
 # Game over function to determine if any legal move is possible
 def is_game_over(board):
+    """Check if the game is over by checking for any possible moves."""
     for i in range(4):
         for j in range(4):
             if board[i][j] == 0:
@@ -49,6 +52,7 @@ def is_game_over(board):
 
 # The functions to make the moves
 def move_left(board):
+    """Move the tiles to the left and merge any adjacent tiles."""
     moved = False
     score = 0
     for row in board:
@@ -68,6 +72,7 @@ def move_left(board):
     return moved, score
 
 def move_right(board):
+    """Move the tiles to the right and merge any adjacent tiles."""
     for row in board:
         row.reverse()
     moved, score = move_left(board)
@@ -76,15 +81,18 @@ def move_right(board):
     return moved, score
 
 def transpose(board):
+    """Transpose the board."""
     return [[board[j][i] for j in range(4)] for i in range(4)]
 
 def move_up(board):
+    """Move the tiles up and merge any adjacent tiles."""
     board[:] = transpose(board)
     moved, score = move_left(board)
     board[:] = transpose(board)
     return moved, score
 
 def move_down(board):
+    """Move the tiles down and merge any adjacent tiles."""
     board[:] = transpose(board)
     moved, score = move_right(board)
     board[:] = transpose(board)
@@ -92,6 +100,7 @@ def move_down(board):
 
 # To make the structure of the board using Pygame
 def draw_board(screen, board, score):
+    """Draw the game board with the current tiles and score."""
     screen.fill(WHITE)
     score_text = FONT.render(f"Score: {score}", True, BLACK)
     screen.blit(score_text, (10, 10))
@@ -101,81 +110,4 @@ def draw_board(screen, board, score):
             tile_value = board[i][j]
             tile_color = COLORS[tile_value]
             pygame.draw.rect(screen, tile_color, (j * TILE_SIZE, i * TILE_SIZE + 50, TILE_SIZE, TILE_SIZE))
-            pygame.draw.rect(screen, BLACK, (j * TILE_SIZE, i * TILE_SIZE + 50, TILE_SIZE, TILE_SIZE), 2)
-            if tile_value != 0:
-                text = FONT.render(str(tile_value), True, BLACK)
-                text_rect = text.get_rect(center=((j + 0.5) * TILE_SIZE, (i + 0.5) * TILE_SIZE + 50))
-                screen.blit(text, text_rect)
-
-    pygame.display.update()
-
-# Making the game over screen for replay or quit and also showing the score achieved
-def display_game_over(screen, score):
-    screen.fill((0, 0, 0, 150))
-    game_over_text = FONT.render("Game Over!", True, BRIGHT_YELLOW)
-    text_rect = game_over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 20))
-    screen.blit(game_over_text, text_rect)
-
-    score_text = FONT.render(f"Your Score: {score}", True, BRIGHT_YELLOW)
-    score_rect = score_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 20))
-    screen.blit(score_text, score_rect)
-
-    replay_text = FONT.render("Press R to Replay or Q to Quit", True, BRIGHT_YELLOW)
-    replay_rect = replay_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 60))
-    screen.blit(replay_text, replay_rect)
-
-    pygame.display.update()
-
-    # Wait for player to choose replay or quit
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                waiting = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    waiting = False  # Replay the game
-                    main()  # Start a new game
-                elif event.key == pygame.K_q:
-                    waiting = False  # Quit the game
-
-def main():
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("2048 Game")
-
-    board = initialize_board()
-    add_new_tile(board)
-    add_new_tile(board)
-    score = 0
-
-    running = True
-    while running:
-        draw_board(screen, board, score)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-                break
-            if event.type == pygame.KEYDOWN:
-                moved = False
-                if event.key in (pygame.K_UP, pygame.K_w):
-                    moved, points = move_up(board)
-                elif event.key in (pygame.K_LEFT, pygame.K_a):
-                    moved, points = move_left(board)
-                elif event.key in (pygame.K_DOWN, pygame.K_s):
-                    moved, points = move_down(board)
-                elif event.key in (pygame.K_RIGHT, pygame.K_d):
-                    moved, points = move_right(board)
-
-                if moved:
-                    score += points
-                    add_new_tile(board)
-                    if is_game_over(board):
-                        display_game_over(screen, score)
-                        running = False
-
-    pygame.quit()
-    sys.exit()
-
-if __name__ == "__main__":
-    main()
+            pygame.draw
